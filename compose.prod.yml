@@ -1,0 +1,86 @@
+services:
+  overcraft-frontend:
+    container_name: overcraft-frontend
+    build:
+      context: ./overcraft-frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - overcraft
+    depends_on:
+      - overcraft-backend
+  overcraft-backend:
+    container_name: overcraft-backend
+    build:
+      context: ./overcraft-backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      AT_SECRET: ${AT_SECRET}
+      RT_SECRET: ${RT_SECRET}
+      NODE_ENV: production
+    ports:
+      - 5000:5000
+    depends_on:
+      overcraft-database:
+        condition: service_healthy
+    restart: always
+    networks:
+      - overcraft
+    volumes:
+      - ./overcraft-backend/images:/usr/src/app/images
+      - ./overcraft-backend/assets:/usr/src/app/assets
+  overcraft-database:
+    container_name: overcraft-database
+    command:
+      [
+        "postgres",
+        "-c",
+        "log_statement=all",
+        "-c",
+        "log_destination=stderr"
+      ]
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - overcraft
+  overcraft-pgadmin:
+    container_name: overcraft-pgadmin
+    image: dpage/pgadmin4:latest
+    restart: unless-stopped
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+      - PGADMIN_LISTEN_PORT=5050
+    ports:
+      - 5050:5050
+    networks:
+      - overcraft
+    depends_on:
+      overcraft-database:
+        condition: service_healthy
+
+networks:
+  overcraft:
+    external: true
+    driver: bridge
+
+volumes:
+  pgdata:

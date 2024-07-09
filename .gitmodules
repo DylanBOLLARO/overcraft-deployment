@@ -1,0 +1,9 @@
+[submodule "overcraft-frontend"]
+	path = overcraft-frontend
+	url = https://github.com/DylanBOLLARO/overcraft-frontend.git
+[submodule "overcraft-backend"]
+	path = overcraft-backend
+	url = https://github.com/DylanBOLLARO/overcraft-backend.git
+[submodule "overcraft-scrapy"]
+	path = overcraft-scrapy
+	url = https://github.com/DylanBOLLARO/overcraft-scrapy.git
