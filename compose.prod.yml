@@ -8,7 +8,7 @@ services:
         NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
     restart: always
     ports:
-      - 3000:3000
+      - 23000:23000
     networks:
       - overcraft
     depends_on:
@@ -24,7 +24,7 @@ services:
       RT_SECRET: ${RT_SECRET}
       NODE_ENV: production
     ports:
-      - 5000:5000
+      - 25000:25000
     depends_on:
       overcraft-database:
         condition: service_healthy
@@ -47,11 +47,12 @@ services:
     image: postgres:latest
     restart: always
     environment:
+      PGPORT: 25432
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - 5432:5432
+      - 25432:25432
     healthcheck:
       test: "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
       interval: 10s
@@ -66,11 +67,11 @@ services:
     image: dpage/pgadmin4:latest
     restart: unless-stopped
     environment:
+      - PGADMIN_LISTEN_PORT=25050
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
-      - PGADMIN_LISTEN_PORT=5050
     ports:
-      - 5050:5050
+      - 25050:25050
     networks:
       - overcraft
     depends_on:
