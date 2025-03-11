@@ -52,8 +52,6 @@ services:
       - PGADMIN_LISTEN_PORT=8585
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
-    ports:
-      - 8585:8585
     networks:
       - overcraft
     depends_on:
@@ -63,9 +61,7 @@ services:
     container_name: overcraft-nginx
     image: nginx:1.27.3
     volumes:
-      - ./nginx:/etc/nginx/conf.d/
-    ports:
-      - "3085:80"
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/
     depends_on:
       - overcraft-database
       - overcraft-frontend

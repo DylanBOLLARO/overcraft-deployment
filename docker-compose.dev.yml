@@ -30,11 +30,16 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: "pgadmin@gmail.com"
       PGADMIN_DEFAULT_PASSWORD: "jfVg525CB2iH6x"
+    ports:
+      - 8585:8585
   overcraft-nginx:
     extends:
       file: docker-services.yml
       service: overcraft-nginx
-
+    volumes:
+      - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/
+    ports:
+      - "3085:80"
 networks:
   overcraft:
     name: overcraft

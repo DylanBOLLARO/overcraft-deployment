@@ -27,6 +27,11 @@ networks:
     enable_ipv6: false
     ipam:
       driver: default
+  vps_nginx_default:
+    name: vps_nginx_default
+    external: true
 
 volumes:
   pgdata:
+
+
