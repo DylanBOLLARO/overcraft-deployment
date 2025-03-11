@@ -1,0 +1,75 @@
+services:
+  overcraft-frontend:
+    container_name: overcraft-frontend
+    build:
+      context: ../overcraft-frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_BACKEND_OVERCRAFT_URL: ${NEXT_PUBLIC_BACKEND_OVERCRAFT_URL}
+    restart: always
+    networks:
+      - overcraft
+    depends_on:
+      - overcraft-backend
+  overcraft-backend:
+    container_name: overcraft-backend
+    build:
+      context: ../overcraft-backend
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      overcraft-database:
+        condition: service_healthy
+    restart: always
+    networks:
+      - overcraft
+  overcraft-database:
+    container_name: overcraft-database
+    command:
+      ["postgres", "-c", "log_statement=all", "-c", "log_destination=stderr"]
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - overcraft
+  overcraft-pgadmin:
+    container_name: overcraft-pgadmin
+    image: dpage/pgadmin4:latest
+    restart: unless-stopped
+    environment:
+      - PGADMIN_LISTEN_ADDRESS=0.0.0.0
+      - PGADMIN_LISTEN_PORT=8585
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - 8585:8585
+    networks:
+      - overcraft
+    depends_on:
+      overcraft-database:
+        condition: service_healthy
+  overcraft-nginx:
+    container_name: overcraft-nginx
+    image: nginx:1.27.3
+    volumes:
+      - ./nginx:/etc/nginx/conf.d/
+    ports:
+      - "3085:80"
+    depends_on:
+      - overcraft-database
+      - overcraft-frontend
+      - overcraft-backend
+    restart: always
+    networks:
+      - overcraft

@@ -3,18 +3,33 @@ services:
     extends:
       file: docker-services.yml
       service: overcraft-frontend
+    ports:
+      - 3000:3000
   overcraft-backend:
     extends:
       file: docker-services.yml
       service: overcraft-backend
+    ports:
+      - 5000:5000
+    environment:
+      - DATABASE_URL=postgresql://postgres:2jBf5giH62C5Vx@overcraft-database:5432/postgres
   overcraft-database:
     extends:
       file: docker-services.yml
       service: overcraft-database
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "2jBf5giH62C5Vx"
   overcraft-pgadmin:
     extends:
       file: docker-services.yml
       service: overcraft-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "pgadmin@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "jfVg525CB2iH6x"
   overcraft-nginx:
     extends:
       file: docker-services.yml
