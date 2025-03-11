@@ -19,6 +19,8 @@ services:
     extends:
       file: docker-services.yml
       service: overcraft-nginx
+    networks:
+      - vps_nginx_default
 
 networks:
   overcraft:
