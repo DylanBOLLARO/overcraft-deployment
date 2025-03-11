@@ -37,7 +37,7 @@ services:
       file: docker-services.yml
       service: overcraft-nginx
     volumes:
-      - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/
+      - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.conf
     ports:
       - "3085:80"
 networks:

@@ -61,7 +61,7 @@ services:
     container_name: overcraft-nginx
     image: nginx:1.27.3
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
     depends_on:
       - overcraft-database
       - overcraft-frontend
